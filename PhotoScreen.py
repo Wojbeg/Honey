@@ -8,7 +8,6 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.swiper import MDSwiper, MDSwiperItem
 from kivy import platform
-
 from Constants import CAMERA_FPS
 from SpecialEffects import *
 from SelfieSegmentation import SelfieSegmentation
@@ -18,9 +17,6 @@ from kivy.graphics.texture import Texture
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.properties import Clock
-
-from Strings import STRINGS_PL
-
 
 class PhotoScreen(Screen):
 

@@ -2,13 +2,10 @@ import os
 import os.path
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.properties import ObjectProperty
-from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRoundFlatIconButton, MDRaisedButton, MDTextButton, MDFlatButton, MDFillRoundFlatButton
-from kivymd.uix.dropdownitem import MDDropDownItem
+from kivymd.uix.button import MDRoundFlatIconButton, MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
@@ -16,10 +13,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.swiper import MDSwiper, MDSwiperItem
 from kivymd.uix.toolbar import MDToolbar
 from kivy.uix.image import Image
-from kivymd.utils.fitimage import FitImage
-
 from Constants import Image_formats, MAX_DETECTION_VALUE, MIN_DETECTION_VALUE
-from Strings import STRINGS_PL
 from kivy.metrics import dp
 
 

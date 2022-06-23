@@ -1,12 +1,8 @@
 from kivy.uix.screenmanager import ScreenManager
-from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationItem
-
 from ChooseFile import ChooseFile
 from Constants import PHOTO_SCREEN, EDITOR_SCREEN, CHOOSER_SCREEN
-
 from PhotoEditor import PhotoEditor
 from PhotoScreen import PhotoScreen
-
 
 class HoneyScreenManager(ScreenManager):
     '''
