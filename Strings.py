@@ -13,9 +13,10 @@ STRINGS_EN = { 'wrong_image_type': "Invalid file format. Only images are allowed
 STRINGS_PL = {
     'wrong_image_type': "Niedopuszczalny typ pliku. Tylko obrazy są dopuszczalne!",
     'choose_folder': "Wybierz folder",
-    'choose_edit_photo': "Przeglądaj swoje zdjęcia i wybierz jeśli chcesz jakieś edytować",
+    'choose_edit_photo': "Przeglądaj swoje zdjęcia przeciągając w lewo i prawo i wybierz jeśli chcesz jakieś edytować",
     'choose_main_folder': "Wybierz domyślny folder",
     'choose_image': 'Wybierz obraz do edycji',
+    'choose_this_image': 'Wybierz ten obraz',
     'edit_photo': 'Edytuj zdjęcie',
     'edit_photo_with_effects': "Edytuj zdjęcie efektami",
     'min': "Min:",

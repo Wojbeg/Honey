@@ -13,9 +13,14 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.swiper import MDSwiper, MDSwiperItem
 from kivymd.uix.toolbar import MDToolbar
+from kivy.uix.image import Image
+from kivymd.utils.fitimage import FitImage
+
 from Constants import Image_formats, MAX_DETECTION_VALUE, MIN_DETECTION_VALUE
 from Strings import STRINGS_PL
+from kivy.metrics import dp
 
 
 class ChooseFile(Screen):
@@ -27,8 +32,13 @@ class ChooseFile(Screen):
         super(ChooseFile, self).__init__(**kwargs)
         print("\nChooseFile.__init__():", id(self), "\n")
 
+        #get app default path
         self.__path = App.get_running_app().default_path
 
+        #path to images to show in swipe
+        self.__images = []
+
+        #get app language
         self.__language = App.get_running_app().return_language()
 
         #bind keyboard events for mobile
@@ -60,6 +70,9 @@ class ChooseFile(Screen):
         self.__screen_label.font_style = 'Subtitle1'
         self.__screen_label.pos_hint = {'center_x': .5, 'center_y': 0.95}
 
+        self.__swiper = MDSwiper(height=dp(180), width=dp(100), items_spacing=dp(5))
+        self.__swiper.pos_hint = {'center_y': 0.73}
+        self.__swiper.size_hint_y = None
 
         #button to select new direcotry
         self.__select_dir_button = MDRoundFlatIconButton()
@@ -68,7 +81,7 @@ class ChooseFile(Screen):
         self.__select_dir_button.pos_hint = {'center_x': 0.5, 'center_y': .4}
         self.__select_dir_button.on_release = self.dir_manager_open
 
-        #button to select image to edit
+        #button to select image from other directory to edit
         self.__select_image_button = MDRoundFlatIconButton()
         self.__select_image_button.text = self.__language.get('choose_image')
         self.__select_image_button.icon = 'image-edit'
@@ -76,9 +89,18 @@ class ChooseFile(Screen):
         self.__select_image_button.on_release = self.img_manager_open
 
 
+        #button to select current image on swiper to edit
+        self.__select_swipe_image_button = MDRoundFlatIconButton()
+        self.__select_swipe_image_button.text = self.__language.get('choose_this_image')
+        self.__select_swipe_image_button.icon = 'image-edit'
+        self.__select_swipe_image_button.pos_hint = {'center_x': 0.5, 'center_y': .5}
+        self.__select_swipe_image_button.on_release = self.edit_this_image
+
         self.__float.add_widget(self.__screen_label)
+        self.__float.add_widget(self.__swiper)
         self.__float.add_widget(self.__select_dir_button)
         self.__float.add_widget(self.__select_image_button)
+        self.__float.add_widget(self.__select_swipe_image_button)
 
         #variable to check if dir manager is opened
         self.__dir_manager_open = False
@@ -144,6 +166,41 @@ class ChooseFile(Screen):
 
         self.__float.add_widget(self.__dropdown_box)
 
+        #add images to swiper
+        self.get_images_from_dir()
+
+    def get_images_from_dir(self):
+        #This function get images from default directory
+
+        #clearing old images from swiper
+        old_widgets = self.__swiper.get_items()
+        for old_widget in old_widgets:
+            self.__swiper.remove_widget(old_widget)
+
+        self.__images.clear()
+
+        #find and append new images
+        for f in os.listdir(self.__path):
+            ext = os.path.splitext(f)[1]
+            if ext.lower() not in Image_formats:
+                continue
+            has_image = True
+            item = MDSwiperItem()
+            item_image = Image()
+
+            item_image.source = os.path.join(self.__path, f)
+            self.__images.append(os.path.join(self.__path, f))
+
+            item_image.radius = [20, ]
+            item.add_widget(item_image)
+            self.__swiper.add_widget(item)
+
+        #check if there is any image
+        if len(self.__images) == 0:
+            self.__select_swipe_image_button.opacity = 0
+        else:
+            self.__select_swipe_image_button.opacity = 1
+
     def get_number_of_detection(self):
         #This function get default number of detection
         detection = App.get_running_app().number_of_detections
@@ -158,6 +215,13 @@ class ChooseFile(Screen):
     def back_btn(self, button):
         # It will navigate back to photo screen
         App.get_running_app().screen_manager.navigate_to_Photo()
+
+    def edit_this_image(self):
+        App.get_running_app().screen_manager\
+            .navigate_to_photo_edit(
+            self.__images[self.__swiper.get_current_index()]
+        )
+
 
     def dir_manager_open(self):
         # Opnens manager with dirs to choose from
@@ -175,6 +239,7 @@ class ChooseFile(Screen):
         self.__path = path
         self.exit_manager()
         toast(path)
+        self.get_images_from_dir()
         App.get_running_app().set_default_path(path)
 
 
