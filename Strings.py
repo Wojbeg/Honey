@@ -25,5 +25,6 @@ STRINGS_PL = {
     'saved_photo': " zostało zapisane ;)",
     'restart_to_apply': "Żeby dane się zaktualizowały zrestartuj aplikacje",
     'num_to_detect': "Zmień max twarzy",
-    'max_detection': "Max wykrywania:"
+    'max_detection': "Max wykrywania:",
+    'no_changes_to_go_back': "Nie ma żadnych zapisanych zmian do cofnięcia"
 }

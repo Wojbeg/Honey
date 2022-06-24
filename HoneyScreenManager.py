@@ -41,4 +41,5 @@ class HoneyScreenManager(ScreenManager):
         self.photo.stop_camera()
         self.transition.direction = 'left'
         self.photo_editor.set_path(filepath)
+        self.photo_editor.keyboard_bind()
         self.current = EDITOR_SCREEN

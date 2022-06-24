@@ -14,6 +14,7 @@ from kivymd.uix.slider import MDSlider
 from kivymd.uix.toolbar import MDToolbar
 from kivy.uix.image import Image
 from kivy.graphics.texture import Texture
+from kivy.core.window import Window
 import time
 
 import filters
@@ -33,12 +34,17 @@ class PhotoEditor(Screen):
         #only Polish version but it can easily be extended to other versions
         self.__language = App.get_running_app().return_language()
 
-        self.__image_texture = None
         self.__image_tmp = None
 
         self.__path = None
 
+        #this will hold current actions to apply
         self.__actions = []
+
+        #this will hold information about changes
+        #and allow to rollback them
+        self.__back_images = []
+        self.__current_changes = 0
 
         #crating main layout
         self.__layout = MDBoxLayout()
@@ -86,10 +92,11 @@ class PhotoEditor(Screen):
         self.__scroll.do_scroll_y = True
 
         #label for informing user
-        self.__edit_info = MDLabel(text=self.__language.get('edit_photo_with_effects'))
+        self.__edit_info = MDToolbar(anchor_title="center")
+        self.__edit_info.title = self.__language.get('edit_photo_with_effects')
         self.__edit_info.size_hint_y = 0.1
-        self.__edit_info.theme_text_color = "Custom"
-        self.__edit_info.md_bg_color = App.get_running_app().theme_cls._get_primary_color()
+        self.__edit_info.elevation = 10
+        self.__edit_info.left_action_items = [['step-backward', lambda x: self.undo_changes(x)], ['check', lambda x: self.save_changes(x)]]
 
 
         self.__edit_info.text_color = self.__toolbar.specific_text_color
@@ -103,6 +110,7 @@ class PhotoEditor(Screen):
         self.__right_edit_label_box.add_widget(self.__scroll)
 
         self.__layout_in.add_widget(self.__right_edit_label_box)
+
 
 
 
@@ -259,7 +267,23 @@ class PhotoEditor(Screen):
 
     def reset_actions(self):
         '''This function resets all actions'''
-        self.__actions = []
+        self.__actions.clear()
+        self.__brightness_slider.value = BRIGHTNESS_VAL_INIT
+        self.__canny_min.value = CANNY_VAL_INIT
+        self.__canny_max.value = CANNY_MAX_VAL_INIT
+
+        self.__gray_check.state = 'normal'
+        self.__sepia_check.state = 'normal'
+        self.__invert_check.state = 'normal'
+        self.__brightness_check.state = 'normal'
+        self.__darkness_check.state = 'normal'
+        self.__canny_check.state = 'normal'
+        self.__correction_check.state = 'normal'
+        self.__pencil_check.state = 'normal'
+        self.__cartoon_check.state = 'normal'
+        self.__summer_check.state = 'normal'
+        self.__winter_check.state = 'normal'
+        self.__gotham_check.state = 'normal'
 
 
     def add_action(self, action):
@@ -275,12 +299,14 @@ class PhotoEditor(Screen):
     def try_effects(self):
         '''This function apply each filter from actions to image'''
 
-        if self.__image_texture is not None:
-            self.__image_tmp = self.__image_texture.copy()
-            self.texture_to_image()
+        if len(self.__back_images) != 0:
+            if self.__back_images[self.__current_changes] is not None:
+                self.__image_tmp = self.__back_images[self.__current_changes].copy()
+                self.texture_to_image()
 
-            for filter in self.__actions:
-                self.apply_filter(filter)
+                for filter in self.__actions:
+                    self.apply_filter(filter)
+
 
     '''
     Each of these functions add effect to actions,
@@ -419,15 +445,32 @@ class PhotoEditor(Screen):
             img = cv2.imread(filepath)
             img = cv2.flip(img, 0)
 
-            self.__image_texture = img.copy()
+            self.__back_images.append(img.copy())
             self.__image_tmp = img.copy()
 
             self.texture_to_image()
 
 
     def navigate_back(self, *args):
+
+        #unbind keyboard and it's actions to prevent
+        #leak of functionality
+        if platform != 'android' and platform != 'ios':
+            self.__keyboard_closed()
+
         #function when back arrow is clicked
         App.get_running_app().screen_manager.navigate_to_Choose_file()
+
+    def __keyboard_closed(self):
+        if self._keyboard is not None:
+            self._keyboard.unbind(on_key_down=self.on_keyboard_down)
+            self._keyboard = None
+
+    def keyboard_bind(self):
+        #this will add ctrl + z combination for undo changes and ctrl + s for save image:
+        if platform != 'android' and platform != 'ios':
+            self._keyboard = Window.request_keyboard(self.__keyboard_closed, self)
+            self._keyboard.bind(on_key_down=self.on_keyboard_down)
 
     '''
     Function below saves image not overriding original one.
@@ -449,3 +492,43 @@ class PhotoEditor(Screen):
         cv2.imwrite(file_name, image_to_save)
 
         toast(self.__language.get('photo') + file_name + self.__language.get('saved_photo'))
+
+    '''
+    This function allows to undo change by clicking back arrow on editing tab or ctrl + z
+    '''
+    def undo_changes(self, *args):
+
+        if self.__current_changes >= 1:
+            self.reset_actions()
+            self.__current_changes -= 1
+            self.__back_images.pop()
+            self.try_effects()
+        else:
+            toast(self.__language.get('no_changes_to_go_back'))
+
+    '''
+    This function allows to save changes so user can add more filters on top of that
+    and use undo
+    '''
+    def save_changes(self, *args):
+        self.__current_changes += 1
+        self.__back_images.append(self.__image_tmp.copy())
+        self.reset_actions()
+
+
+    '''
+    Functions to add undo and save functionality
+    '''
+
+    def on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        print(keycode)
+        print(modifiers)
+        if 'ctrl' in modifiers:
+            #user clicked ctrl + z
+            if keycode[0] == 122:
+                self.undo_changes()
+            elif keycode[0] == 115:
+                self.save_image()
+
+
+
