@@ -9,7 +9,9 @@ Link to Mediapipe website: https://google.github.io/mediapipe/ <br/>
 Link to Kivy website: https://kivy.org/ <br/><br/>
 
 An application has two main purposes:
-  * Apply Snapchat-like filters on the live camera image like: dog filter with nose, ears and tongue, space helmet with space background, devil horns, funny eyes and green face mesh,
+  * Apply Snapchat-like filters on the live camera image like: dog filter with nose, ears and tongue, space helmet with space background, devil horns, funny eyes and green face mesh. <br>
+The dog filter has a special ability to detect if the mouth is open so it can overlay the tongue on them only when the person opens their mouth.
+
   * Edit photo using most popular filters like: greyscale, sepia, pencil sketch, invert, summer effect, winter effect, gotham effect, canny, cartoon, brightness and darkness control.
   
 ## Table of contents:
@@ -26,6 +28,7 @@ Project is created with:
 * Numpy
 
 ## Illustrations
+In the following illustrations only static photos were used to show abilities of app. However, the application uses a normal live camera and applies the filters on user.
 <p float="left">
   
 </p>
