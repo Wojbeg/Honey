@@ -60,7 +60,6 @@ In the following illustrations only static photos were used to show abilities of
  <img src="Illustrations/edit-photo11.png" height = "150">
  <img src="Illustrations/edit-photo12.png" height = "150">
  <img src="Illustrations/edit-photo13.png" height = "150">
- <img src="Illustrations/edit-photo14.png" height = "150">
  <img src="Illustrations/edit-photo15.png" height = "150">
  <img src="Illustrations/edit-photo16.png" height = "150">
  <img src="Illustrations/edit-photo17.png" height = "150">
